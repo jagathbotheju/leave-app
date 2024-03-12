@@ -63,15 +63,15 @@ const LeaveBalanceForm = ({ user, isEditMode }: Props) => {
   };
 
   useEffect(() => {
-    if (user.leaveBalance) {
+    if (user?.leaveBalance) {
       setEdit(isEditMode);
       const { annual, annualForward, casual, sick } = user.leaveBalance;
       form.setValue("annual", annual);
       form.setValue("annualForward", annualForward);
       form.setValue("casual", casual);
-      form.setValue("sick", sick);
+      //form.setValue("sick", sick);
     }
-  }, [user.leaveBalance, form, isEditMode]);
+  }, [user?.leaveBalance, form, isEditMode]);
 
   return (
     <Form {...form}>
@@ -80,7 +80,9 @@ const LeaveBalanceForm = ({ user, isEditMode }: Props) => {
         className="space-y-4 max-w-lg"
       >
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">{user.name}</h1>
+          <h1 className="text-2xl font-bold text-slate-700">
+            {isEditMode ? "Update Leave Balance" : "Set Leave Balance"}
+          </h1>
           {edit && (
             <FaRegEdit
               className="h-6 w-6 cursor-pointer"
@@ -170,7 +172,7 @@ const LeaveBalanceForm = ({ user, isEditMode }: Props) => {
 
         <div className="mt-5">
           <Button disabled={isPending || edit} type="submit">
-            Set Leave Balance
+            {isEditMode ? "Update Leave Balance" : "Set Leave Balance"}
           </Button>
         </div>
       </form>

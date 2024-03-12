@@ -47,8 +47,9 @@ const LoginForm = ({ callbackUrl }: Props) => {
       .then((res) => {
         if (!res?.ok) {
           console.log(res);
+          return toast.error(res?.error);
         } else {
-          toast.success("You are Logged In");
+          toast.success("Successfully Logged In");
           form.reset();
           router.push(callbackUrl ? callbackUrl : "/");
         }
@@ -114,6 +115,13 @@ const LoginForm = ({ callbackUrl }: Props) => {
 
         <div className="flex flex-col gap-3 items-center pb-5">
           <Button className="w-full">Log In</Button>
+          <Link
+            href="/auth/forgot-password"
+            className="text-xs self-end cursor-pointer hover:text-primary"
+          >
+            forgot password?
+          </Link>
+
           <div className="flex items-center gap-x-5">
             <div className="flex bg-slate-200 w-20 h-[0.5px]" />
             or
@@ -124,7 +132,7 @@ const LoginForm = ({ callbackUrl }: Props) => {
             Google
           </Button>
 
-          <Link href="/auth/register" className="text-sm">
+          <Link href="/auth/register" className="text-xs hover:text-primary">
             {"Don't have an Account? Create New"}
           </Link>
         </div>

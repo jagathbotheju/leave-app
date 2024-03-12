@@ -1,8 +1,14 @@
 "use client";
 
-import { LeaveRequestSchema, LeaveBalanceSchema } from "@/lib/schema";
+import { LeaveEditSchema, LeaveBalanceSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, useTransition } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -28,38 +34,60 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { UserExt } from "@/types";
 import { toast } from "sonner";
-import { setLeave, setLeaveBalance } from "@/actions/leaveActions";
+import { setLeaveBalance, updateLeave } from "@/actions/leaveActions";
 import { useRouter } from "next/navigation";
+import { LeaveBalance, LeaveType } from "@prisma/client";
 
 interface Props {
-  user: UserExt;
+  leaveBalance: LeaveBalance;
+  userId: string;
+  leaveId: string;
+  startDate: Date;
+  endDate: Date;
+  days: number;
+  leaveType: string;
+  setEditDialogOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const LeaveRequestForm = ({ user }: Props) => {
+const LeaveEditForm = ({
+  leaveBalance,
+  userId,
+  leaveId,
+  startDate,
+  endDate,
+  days,
+  leaveType,
+  setEditDialogOpen,
+}: Props) => {
   const router = useRouter();
   const [mount, setMount] = useState(false);
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const form = useForm<z.infer<typeof LeaveRequestSchema>>({
-    resolver: zodResolver(LeaveRequestSchema),
+  const form = useForm<z.infer<typeof LeaveEditSchema>>({
+    resolver: zodResolver(LeaveEditSchema),
     defaultValues: {
       year: moment().year().toString(),
-      startDate: new Date(),
-      endDate: new Date(),
-      days: 1,
-      leaveType: "",
+      startDate: startDate,
+      endDate: endDate,
+      days: days,
+      leaveType: leaveType.toLowerCase(),
     },
     mode: "all",
   });
 
-  const onSubmit = (data: z.infer<typeof LeaveRequestSchema>) => {
-    const annualBalance =
-      user.leaveBalance.annual + user.leaveBalance.annualForward;
-    const casualBalance = user.leaveBalance.casual;
-    const leaveBalance = user.leaveBalance;
+  const onSubmit = (data: z.infer<typeof LeaveEditSchema>) => {
+    //console.log("prev leave", leaveBalance);
+    console.log("edit dialog", data);
+    setEditDialogOpen(false);
+
+    if (moment(data.startDate).isBefore(new Date())) {
+      return toast.error("Start date is already past");
+    }
+
+    const annualBalance = leaveBalance.annual + leaveBalance.annualForward;
+    const casualBalance = leaveBalance.casual;
 
     if (data.leaveType === "annual" && data.days > annualBalance) {
       return toast.error("Annual Leave exceeds available balance");
@@ -68,11 +96,40 @@ const LeaveRequestForm = ({ user }: Props) => {
       return toast.error("Casual Leave exceeds available balance");
     }
 
-    const newLeaveTypeBal =
-      (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) -
-      data.days;
+    let newBal = 0;
+
+    // start date change
+    if (startDate > data.startDate) {
+      console.log("start date-1");
+      newBal =
+        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) +
+        moment(startDate).diff(moment(data.startDate), "days");
+    }
+    if (startDate < data.startDate) {
+      console.log("start date-2");
+      newBal =
+        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) -
+        moment(data.startDate).diff(moment(startDate), "days");
+    }
+
+    //end date change
+    if (endDate > data.endDate) {
+      console.log("end date-1");
+      //console.log('diff',moment(startDate).diff(moment(data.startDate), "days"));
+      newBal =
+        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) -
+        moment(endDate).diff(moment(data.endDate), "days");
+    }
+    if (endDate < data.endDate) {
+      console.log("end date-2");
+      //console.log(moment(endDate).diff(moment(data.endDate), "days"));
+      newBal =
+        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) +
+        moment(data.endDate).diff(moment(endDate), "days");
+    }
+
     const newBalObject = {
-      [data.leaveType]: newLeaveTypeBal,
+      [data.leaveType]: newBal,
     };
     const newLeaveBalance = { ...leaveBalance, ...newBalObject };
     const newLeaveBalanceRequest: z.infer<typeof LeaveBalanceSchema> = {
@@ -83,18 +140,18 @@ const LeaveRequestForm = ({ user }: Props) => {
       sick: newLeaveBalance.sick,
     };
 
-    setLeave({ userid: user.id, newLeave: data })
+    updateLeave({ userId, leaveId, newLeave: data })
       .then((response) => {
         if (response.success) {
           setLeaveBalance({
-            userid: user.id,
+            userid: userId,
             balance: newLeaveBalanceRequest,
             isEditMode: true,
           })
             .then((res) => {
               if (res.success) {
                 form.reset();
-                router.push(`/leave/history/${user.id}`);
+                router.push(`/profile/${userId}`);
                 return toast.success("New Leave Requested Successfully");
               }
               if (!response.success) {
@@ -115,6 +172,7 @@ const LeaveRequestForm = ({ user }: Props) => {
       })
       .finally(() => {
         form.reset();
+        setEditDialogOpen(false);
       });
   };
 
@@ -141,7 +199,7 @@ const LeaveRequestForm = ({ user }: Props) => {
       >
         {/* year */}
         <FormField
-          disabled={isPending}
+          // disabled={form.formState.isSubmitting}
           control={form.control}
           name="year"
           render={({ field }) => (
@@ -213,8 +271,9 @@ const LeaveRequestForm = ({ user }: Props) => {
                     onSelect={(value) => {
                       field.onChange(value);
                       setStartDateOpen(false);
+                      calculateDays();
                     }}
-                    disabled={(date) => date < new Date()}
+                    // disabled={(date) => date < new Date()}
                     initialFocus
                   />
                 </PopoverContent>
@@ -288,12 +347,21 @@ const LeaveRequestForm = ({ user }: Props) => {
         />
 
         {/* submit button */}
-        <Button type="submit" size="sm" disabled={!form.formState.isValid}>
-          Submit
-        </Button>
+        <div className="flex gap-2">
+          <Button type="submit" size="sm" disabled={!form.formState.isValid}>
+            Update
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setEditDialogOpen(false)}
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
     </Form>
   );
 };
 
-export default LeaveRequestForm;
+export default LeaveEditForm;

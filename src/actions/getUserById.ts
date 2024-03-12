@@ -6,7 +6,11 @@ export const getUserById = async (userid: string) => {
     const user = await prisma.user.findUnique({
       where: { id: userid },
       include: {
-        leave: true,
+        leave: {
+          orderBy: {
+            updatedAt: "desc",
+          },
+        },
         leaveBalance: true,
       },
     });

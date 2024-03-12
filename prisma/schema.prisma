@@ -31,12 +31,12 @@ model Account {
 
 model User {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  name           String?
+  name           String?       @unique
   email          String?       @unique
   emailVerified  DateTime?
   image          String?
   hashedPassword String?
-  role           String        @default("USER")
+  role           Role          @default(USER)
   accounts       Account[]
   sessions       Session[]
   leaveBalance   LeaveBalance?
@@ -44,12 +44,13 @@ model User {
 }
 
 model Leave {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  year      String
-  startDate DateTime
-  endDate   DateTime
-  days      Int
-  leaveType LeaveType
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  year        String
+  startDate   DateTime
+  endDate     DateTime
+  days        Int
+  leaveType   LeaveType
+  leaveStatus LeaveStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -80,6 +81,7 @@ enum LeaveStatus {
   APPROVED
   PENDING
   REJECTED
+  UNKNOWN
 }
 
 enum LeaveType {
@@ -87,6 +89,7 @@ enum LeaveType {
   CASUAL
   SICK
   ANNUAL_FORWARD
+  UNKNOWN
 }
 
 enum Role {

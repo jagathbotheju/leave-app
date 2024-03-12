@@ -8,9 +8,9 @@ interface Props {
 
 const LoginPage = ({ searchParams }: Props) => {
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <div className="flex flex-col p-4 shadow-lg w-4/12">
-        <h1 className="font-bold text-3xl my-10 text-center">Log In</h1>
+    <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col p-5 shadow-lg w-full md:w-[30%] mt-[50%] md:mt-[10%]">
+        <h1 className="font-bold text-3xl mb-10 text-center">Log In</h1>
         <LoginForm callbackUrl={searchParams.callbackUrl} />
       </div>
     </div>

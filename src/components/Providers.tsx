@@ -8,7 +8,15 @@ interface Props {
 const Providers = ({ children }: Props) => {
   return (
     <>
-      <Toaster richColors />
+      <Toaster
+        richColors
+        duration={10000}
+        toastOptions={{
+          classNames: {
+            title: "font-bold",
+          },
+        }}
+      />
       {children}
     </>
   );

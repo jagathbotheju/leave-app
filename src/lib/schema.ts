@@ -1,5 +1,49 @@
 import { z } from "zod";
 import { format } from "date-fns";
+import moment from "moment";
+
+export const ResetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(1, "password is required")
+      .min(6, "password must be at least 6 characters")
+      .max(20, "password cannot exceed 20 characters"),
+    confirmPassword: z
+      .string()
+      .min(1, "password is required")
+      .min(6, "password must be at least 6 characters")
+      .max(20, "password cannot exceed 20 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password does not match",
+    path: ["confirmPassword"],
+  });
+
+export const ProfileEditSchema = z.object({
+  name: z
+    .string()
+    .min(1, "name is required")
+    .min(2, "name must be at least 2 characters")
+    .max(45, "name must less than 45 characters"),
+  email: z
+    .string()
+    .min(1, "e-mail is required")
+    .email("please enter valid email address"),
+});
+
+export const LeaveEditSchema = z.object({
+  year: z.string().min(1, "Year is required"),
+  startDate: z.coerce
+    .date()
+    .refine(
+      (data) => moment(data).isBefore(new Date()),
+      "Start date is already passed"
+    ),
+  endDate: z.coerce.date(),
+  days: z.coerce.number(),
+  leaveType: z.string().min(1, "leave type is required"),
+});
 
 export const LeaveRequestSchema = z.object({
   year: z.string().min(1, "Year is required"),
