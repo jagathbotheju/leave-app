@@ -35,9 +35,14 @@ import {
   SelectValue,
 } from "./ui/select";
 import { toast } from "sonner";
-import { setLeaveBalance, updateLeave } from "@/actions/leaveActions";
+import {
+  setLeaveBalance,
+  setLeaveStatus,
+  updateLeave,
+} from "@/actions/leaveActions";
 import { useRouter } from "next/navigation";
 import { LeaveBalance, LeaveType } from "@prisma/client";
+import { LeaveStatus } from "@prisma/client";
 
 interface Props {
   leaveBalance: LeaveBalance;
@@ -78,8 +83,6 @@ const LeaveEditForm = ({
   });
 
   const onSubmit = (data: z.infer<typeof LeaveEditSchema>) => {
-    //console.log("prev leave", leaveBalance);
-    console.log("edit dialog", data);
     setEditDialogOpen(false);
 
     if (moment(data.startDate).isBefore(new Date())) {
@@ -102,29 +105,25 @@ const LeaveEditForm = ({
     if (startDate > data.startDate) {
       console.log("start date-1");
       newBal =
-        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) +
+        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) -
         moment(startDate).diff(moment(data.startDate), "days");
     }
     if (startDate < data.startDate) {
       console.log("start date-2");
       newBal =
-        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) -
+        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) +
         moment(data.startDate).diff(moment(startDate), "days");
     }
 
     //end date change
     if (endDate > data.endDate) {
-      console.log("end date-1");
-      //console.log('diff',moment(startDate).diff(moment(data.startDate), "days"));
       newBal =
-        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) -
+        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) +
         moment(endDate).diff(moment(data.endDate), "days");
     }
     if (endDate < data.endDate) {
-      console.log("end date-2");
-      //console.log(moment(endDate).diff(moment(data.endDate), "days"));
       newBal =
-        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) +
+        (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) -
         moment(data.endDate).diff(moment(endDate), "days");
     }
 
@@ -140,6 +139,8 @@ const LeaveEditForm = ({
       sick: newLeaveBalance.sick,
     };
 
+    console.log("leaveBalance", newLeaveBalanceRequest);
+
     updateLeave({ userId, leaveId, newLeave: data })
       .then((response) => {
         if (response.success) {
@@ -148,11 +149,16 @@ const LeaveEditForm = ({
             balance: newLeaveBalanceRequest,
             isEditMode: true,
           })
-            .then((res) => {
+            .then(async (res) => {
               if (res.success) {
+                await setLeaveStatus({
+                  userId,
+                  leaveId,
+                  status: LeaveStatus.PENDING,
+                });
                 form.reset();
-                router.push(`/profile/${userId}`);
-                return toast.success("New Leave Requested Successfully");
+                // router.push(`/profile/${userId}`);
+                return toast.success(res.message);
               }
               if (!response.success) {
                 return toast.error(response.error);
@@ -258,7 +264,7 @@ const LeaveEditForm = ({
                       {field.value ? (
                         format(field.value, "PPP")
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Start Date</span>
                       )}
                       <FaCalendarAlt className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -273,8 +279,10 @@ const LeaveEditForm = ({
                       setStartDateOpen(false);
                       calculateDays();
                     }}
-                    // disabled={(date) => date < new Date()}
-                    initialFocus
+                    // disabled={(date) =>
+                    //   date < new Date() || date < form.getValues().startDate
+                    // }
+                    // initialFocus
                   />
                 </PopoverContent>
               </Popover>
@@ -321,7 +329,7 @@ const LeaveEditForm = ({
                     disabled={(date) =>
                       date < new Date() || date < form.getValues().startDate
                     }
-                    initialFocus
+                    // initialFocus
                   />
                 </PopoverContent>
               </Popover>

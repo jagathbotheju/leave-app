@@ -34,12 +34,13 @@ export const ProfileEditSchema = z.object({
 
 export const LeaveEditSchema = z.object({
   year: z.string().min(1, "Year is required"),
-  startDate: z.coerce
-    .date()
-    .refine(
-      (data) => moment(data).isBefore(new Date()),
-      "Start date is already passed"
-    ),
+  // startDate: z.coerce
+  //   .date()
+  //   .refine(
+  //     (data) => moment(data).isBefore(new Date()),
+  //     "Start date is already passed"
+  //   ),
+  startDate: z.coerce.date(),
   endDate: z.coerce.date(),
   days: z.coerce.number(),
   leaveType: z.string().min(1, "leave type is required"),

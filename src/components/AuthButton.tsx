@@ -77,7 +77,12 @@ const AuthButton = () => {
 
               {/* admin */}
               {user.role === "ADMIN" && (
-                <DropdownMenuItem>ADMIN</DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer hover:font-semibold"
+                  onClick={() => router.push(`/admin/${user.id}`)}
+                >
+                  ADMIN
+                </DropdownMenuItem>
               )}
 
               {/* logout */}

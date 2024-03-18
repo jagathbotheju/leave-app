@@ -24,15 +24,16 @@ const LeaveStatusManage = ({ rowData }: Props) => {
   const [isPending, startTransition] = useTransition();
   const { data: session } = useSession();
   const user = session?.user as UserExt;
-  console.log(rowData);
 
   return (
     <Select
-      disabled={user.role !== "ADMIN" || isPending}
+      disabled={
+        user?.role !== "ADMIN" || isPending || rowData.startDate < new Date()
+      }
       onValueChange={(value) => {
         setLeaveStatus({
           leaveId: rowData.leaveId,
-          userId: user.id,
+          userId: rowData.userId,
           status: value,
         })
           .then((response) => {
@@ -48,11 +49,15 @@ const LeaveStatusManage = ({ rowData }: Props) => {
       }}
     >
       <SelectTrigger
-        className={cn("w-[150px] font-semibold text-white tracking-widest", {
-          "bg-yellow-500": rowData.leaveStatus === LeaveStatus.PENDING,
-          "bg-green-400": rowData.leaveStatus === LeaveStatus.APPROVED,
-          "bg-red-400": rowData.leaveStatus === LeaveStatus.REJECTED,
-        })}
+        className={cn(
+          "w-[150px] font-semibold text-white tracking-widest",
+          rowData.startDate < new Date() && "bg-opacity-60",
+          {
+            "bg-yellow-500": rowData.leaveStatus === LeaveStatus.PENDING,
+            "bg-green-400": rowData.leaveStatus === LeaveStatus.APPROVED,
+            "bg-red-400": rowData.leaveStatus === LeaveStatus.REJECTED,
+          }
+        )}
       >
         <SelectValue placeholder={rowData.leaveStatus.toUpperCase()} />
       </SelectTrigger>

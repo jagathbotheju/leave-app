@@ -1,13 +1,13 @@
 "use client";
+import { LeaveBalance } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "./ui/badge";
-import { cn } from "@/lib/utils";
-import LeaveStatusManage from "./LeaveStatusManage";
-import { LeaveBalance, LeaveStatus } from "@prisma/client";
-import LeaveActions from "./LeaveHistoryActions";
 import { format } from "date-fns";
+import LeaveHistoryActions from "./LeaveHistoryActions";
+import LeaveStatusManage from "./LeaveStatusManage";
 
-export type LeaveHistoryColumnType = {
+export type AdminHistoryColumnType = {
+  id: string;
+  name: string;
   leaveId: string;
   year: string;
   appliedOn: Date;
@@ -20,7 +20,11 @@ export type LeaveHistoryColumnType = {
   leaveBalance: LeaveBalance;
 };
 
-export const leaveHistoryColumns: ColumnDef<LeaveHistoryColumnType>[] = [
+const AdminHistoryColumns: ColumnDef<AdminHistoryColumnType>[] = [
+  {
+    accessorKey: "name",
+    header: "NAME",
+  },
   {
     accessorKey: "year",
     header: "YEAR",
@@ -62,20 +66,7 @@ export const leaveHistoryColumns: ColumnDef<LeaveHistoryColumnType>[] = [
     header: "STATUS",
     cell: ({ row }) => {
       const data = row.original;
-      return (
-        <Badge
-          className={cn(
-            "font-semibold text-white tracking-widest p-2 w-[100px] text-center flex justify-center",
-            {
-              "bg-yellow-500": data.leaveStatus === LeaveStatus.PENDING,
-              "bg-green-400": data.leaveStatus === LeaveStatus.APPROVED,
-              "bg-red-400": data.leaveStatus === LeaveStatus.REJECTED,
-            }
-          )}
-        >
-          {data.leaveStatus.toUpperCase()}
-        </Badge>
-      );
+      return <LeaveStatusManage rowData={data} />;
     },
   },
   {
@@ -83,9 +74,9 @@ export const leaveHistoryColumns: ColumnDef<LeaveHistoryColumnType>[] = [
     header: "",
     cell: ({ row }) => {
       const data = row.original;
-      return <LeaveActions data={data} />;
+      return <LeaveHistoryActions data={data} />;
     },
   },
 ];
 
-export default leaveHistoryColumns;
+export default AdminHistoryColumns;

@@ -2,6 +2,41 @@
 import prisma from "@/lib/prismadb";
 import { revalidatePath } from "next/cache";
 
+export const getUsers = async () => {
+  try {
+    const users = await prisma.user.findMany({
+      include: {
+        leave: {
+          orderBy: {
+            startDate: "asc",
+          },
+        },
+        leaveBalance: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    if (users) {
+      return {
+        success: true,
+        data: users,
+      };
+    }
+
+    return {
+      success: false,
+      error: "Could not get users,try again later",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: "Internal Server Error,try again later",
+    };
+  }
+};
+
 export const updateUserProfile = async ({
   name,
   email,

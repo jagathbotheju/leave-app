@@ -65,7 +65,7 @@ export const updateLeave = async ({
     if (leave) {
       return {
         success: true,
-        data: "Leave Updated Successfully",
+        message: "Leave Updated Successfully",
       };
     }
 
@@ -191,6 +191,8 @@ export const setLeaveStatus = async ({
   leaveId: string;
   status: string;
 }) => {
+  console.log("userid", userId);
+  console.log("leaveid", leaveId);
   try {
     const leaveStatus =
       status === "PENDING"
@@ -201,6 +203,7 @@ export const setLeaveStatus = async ({
         ? LeaveStatus.REJECTED
         : LeaveStatus.UNKNOWN;
 
+    console.log("status", leaveStatus);
     const updatedLeave = await prisma.leave.update({
       where: {
         id: leaveId,
@@ -224,6 +227,7 @@ export const setLeaveStatus = async ({
       error: "Could not change leave status, try later!",
     };
   } catch (error) {
+    console.log(error);
     return {
       success: false,
       error: "Internal Server Error",

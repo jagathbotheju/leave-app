@@ -112,7 +112,7 @@ const LeaveHistoryActions = ({ data }: Props) => {
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogTitle>Edit Leave</AlertDialogTitle>
               <AlertDialogDescription>
                 <LeaveEditForm
                   leaveBalance={data.leaveBalance}
