@@ -1,15 +1,13 @@
 "use client";
-import Timeline from "react-calendar-timeline";
 import "react-calendar-timeline/lib/Timeline.css";
 import _ from "lodash";
 import moment from "moment";
 import useDraggableScroll from "use-draggable-scroll";
 import { useRef } from "react";
 import { UserExt } from "@/types";
-import { cn } from "@/lib/utils";
 import { months } from "@/lib/data";
 import DateChip from "./DateChip";
-import { Leave } from "@prisma/client";
+import { LeaveStatus } from "@prisma/client";
 
 interface Props {
   users: UserExt[];
@@ -20,15 +18,6 @@ const LeaveTimeLine = ({ users }: Props) => {
   const { onMouseDown } = useDraggableScroll(ref);
   const daysInMonth = (month: number) =>
     new Date(new Date().getFullYear(), month, 0).getDate();
-
-  const sDate = moment(users[0].leave[0].startDate);
-  const eDate = moment(users[0].leave[0].endDate);
-  const checkDate = moment(users[0].leave[0].startDate).add("d", 6);
-
-  const startDays: moment.Moment[] = [];
-  const endDays: moment.Moment[] = [];
-  let dateRange: Date[][] = [];
-  const leaveDates: Date[] = [];
 
   const getDateRange = (startDate: Date, endDate: Date, steps = 1) => {
     const dateArray = [];
@@ -43,29 +32,85 @@ const LeaveTimeLine = ({ users }: Props) => {
     return dateArray;
   };
 
-  users[0].leave.map((item: Leave) => {
-    const range = getDateRange(item.startDate, item.endDate);
-    range.map((date) => leaveDates.push(date));
-    dateRange.push(range);
-  });
+  const getCalendar = () => {
+    const cal: {
+      date: Date;
+      isOnLeave: boolean;
+      status: LeaveStatus;
+    }[] = [];
+    _.times(12).map((month: number, monthIndex) => {
+      return _.times(daysInMonth(month + 1)).map((date: number, index) => {
+        const checkDate = new Date(
+          `${moment().year()}-${month + 1}-${date + 1}`
+        );
+        cal.push({
+          date: checkDate,
+          isOnLeave: false,
+          status: LeaveStatus.PENDING,
+        });
+      });
+    });
 
-  //console.log(leaveDates);
-  //console.log(endDays);
+    return cal;
+  };
+
+  const getUserLeaves = (user: UserExt) => {
+    const userLeaves: { date: Date; status: LeaveStatus }[] = [];
+    user.leave.map((item) => {
+      const range = getDateRange(item.startDate, item.endDate);
+      range.map((date) =>
+        userLeaves.push({
+          date: date,
+          status: item.leaveStatus,
+        })
+      );
+    });
+    return userLeaves;
+  };
+
+  const getUserLeaveCalendar = (
+    calendar: {
+      date: Date;
+      isOnLeave: boolean;
+      status: LeaveStatus;
+    }[],
+    userLeaves: { date: Date; status: LeaveStatus }[]
+  ) => {
+    const userLeaveCalendar = calendar.map((calendarItem) => {
+      const includes = userLeaves.find(
+        (userLeave) =>
+          userLeave.date.toISOString() === calendarItem.date.toISOString()
+      );
+      if (includes) {
+        return {
+          date: calendarItem.date,
+          isOnLeave: true,
+          status: includes.status,
+        };
+      }
+      return calendarItem;
+    });
+    return userLeaveCalendar;
+  };
+
+  const calendar = getCalendar();
+  // console.log("user", users[0]);
+  //const userLeaves = getUserLeaves(users[0]);
+  //console.log(userLeaves.map((leave) => leave.date.toDateString()));
 
   return (
     <div className="flex flex-col w-full">
       <div className="flex w-full h-[700px] gap-1">
         {/* user names */}
-        <div className="flex flex-col w-[10%] bg-slate-100 gap-4 mt-10">
+        <div className="flex flex-col w-[10%] gap-4 mt-10">
           {users.map((user) => (
-            <p key={user.id} className="p-2 bg-slate-200 h-10">
+            <p
+              key={user.id}
+              className="p-2 h-10 text-end font-semibold rounded-md bg-orange-100 text-slate-700"
+            >
               {user.name}
             </p>
           ))}
-          {/* <p className="p-2 bg-slate-200 h-10">Jagath</p>
-          <p className="p-2 bg-slate-200 h-10">Jagath</p>
-          <p className="p-2 bg-slate-200 h-10">Jagath</p>
-          <p className="p-2 bg-slate-200 h-10">Jagath</p> */}
         </div>
 
         <div
@@ -73,7 +118,7 @@ const LeaveTimeLine = ({ users }: Props) => {
           ref={ref}
           onMouseDown={onMouseDown}
         >
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full">
             <div className="flex w-full h-10 items-center gap-1 ml-2">
               {months.map((month, index) =>
                 _.times(daysInMonth(index + 1)).map((date: number, index) => {
@@ -94,48 +139,28 @@ const LeaveTimeLine = ({ users }: Props) => {
             </div>
 
             {/* user leaves */}
-            {users.map((user, userIndex) => {
-              return (
-                <div key={user.id} className="flex gap-1 mb-4">
-                  {_.times(12).map((month, monthIndex) => {
-                    let startDate: moment.Moment;
-                    let endDate: moment.Moment;
-                    //let checkDate: moment.Moment;
-                    let isAfter = false;
-                    let isBefore = false;
-                    return _.times(daysInMonth(month + 1)).map(
-                      //date and index 0 based
-                      (date: number, index) => {
-                        let isBetween = false;
+            <div className="flex flex-col gap-4">
+              {users.map((user, index) => {
+                const userLeaves = getUserLeaves(user);
+                const userLeaveCalendar = getUserLeaveCalendar(
+                  calendar,
+                  userLeaves
+                );
 
-                        if (isBetween) {
-                          return (
-                            <DateChip
-                              key={index + date}
-                              user={user}
-                              date={date}
-                              userIndex={userIndex}
-                              monthIndex={monthIndex}
-                              bgColor="bg-red-100"
-                            />
-                          );
-                        } else {
-                          return (
-                            <DateChip
-                              key={index + date}
-                              user={user}
-                              date={date}
-                              userIndex={userIndex}
-                              monthIndex={monthIndex}
-                            />
-                          );
-                        }
-                      }
-                    );
-                  })}
-                </div>
-              );
-            })}
+                const row = userLeaveCalendar.map((leaveInfo) => (
+                  <DateChip
+                    key={leaveInfo.date.toISOString()}
+                    leaveInfo={leaveInfo}
+                  />
+                ));
+
+                return (
+                  <div key={index} className="flex gap-1">
+                    {row}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

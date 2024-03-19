@@ -1,38 +1,44 @@
 import { months } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import { UserExt } from "@/types";
-import moment from "moment";
+import { LeaveStatus } from "@prisma/client";
 
 interface Props {
-  user: UserExt;
-  date: number;
-  userIndex: number;
-  monthIndex: number;
-  bgColor?: string;
+  leaveInfo: {
+    date: Date;
+    isOnLeave: boolean;
+    status: LeaveStatus;
+  };
 }
 
-const DateChip = ({
-  user,
-  date,
-  userIndex,
-  monthIndex,
-  bgColor = "",
-}: Props) => {
+const DateChip = ({ leaveInfo }: Props) => {
+  const date = leaveInfo.date.getDate();
+  const month = leaveInfo.date.getMonth();
+  console.log(leaveInfo.date.getMonth() + 1, leaveInfo.date.getMonth() + 1);
+
   return (
     <div
       className={cn(
         `p-2 px-4 w-5 flex items-center justify-center h-10 text-xs text-slate-500 rounded-md border`,
-        bgColor
-        // {
-        //   [bgColor]:
-        //     moment(user.leave[userIndex].startDate).date() <= date + 1 &&
-        //     moment(user.leave[userIndex].endDate).date() >= date + 1,
-        // }
+        leaveInfo.isOnLeave && "text-slate-700 font-semibold",
+        {
+          "bg-green-300":
+            leaveInfo.status === LeaveStatus.APPROVED && leaveInfo.isOnLeave,
+          "bg-orange-300":
+            leaveInfo.status === LeaveStatus.PENDING && leaveInfo.isOnLeave,
+          "bg-red-300": leaveInfo.status === LeaveStatus.REJECTED,
+        }
       )}
     >
       <div className="flex items-center justify-between flex-col">
-        <p className="text-[8px] text-slate-400">{months[monthIndex]}</p>
-        <p>{date + 1}</p>
+        <p
+          className={cn(
+            "text-[8px] text-slate-400",
+            leaveInfo.isOnLeave && "text-slate-700 font-semibold"
+          )}
+        >
+          {months[month]}
+        </p>
+        <p>{date}</p>
       </div>
     </div>
   );
