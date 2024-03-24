@@ -103,13 +103,11 @@ const LeaveEditForm = ({
 
     // start date change
     if (startDate > data.startDate) {
-      console.log("start date-1");
       newBal =
         (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) -
         moment(startDate).diff(moment(data.startDate), "days");
     }
     if (startDate < data.startDate) {
-      console.log("start date-2");
       newBal =
         (leaveBalance[data.leaveType as keyof typeof leaveBalance] as number) +
         moment(data.startDate).diff(moment(startDate), "days");
@@ -138,8 +136,6 @@ const LeaveEditForm = ({
       casual: newLeaveBalance.casual,
       sick: newLeaveBalance.sick,
     };
-
-    console.log("leaveBalance", newLeaveBalanceRequest);
 
     updateLeave({ userId, leaveId, newLeave: data })
       .then((response) => {
@@ -173,7 +169,6 @@ const LeaveEditForm = ({
         }
       })
       .catch((error) => {
-        console.log(error);
         toast.error("Internal Server Error, Try Later");
       })
       .finally(() => {

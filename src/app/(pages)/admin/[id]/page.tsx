@@ -73,8 +73,6 @@ const AdminPage = async ({ params }: Props) => {
     // return history;
   });
 
-  // console.log("data", history);
-
   return (
     <div className="flex w-full flex-col">
       <Header title="ADMIN AREA" className="bg-red-100 text-red-500" />

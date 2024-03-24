@@ -102,7 +102,6 @@ export const updateUserProfile = async ({
     });
 
     if (updatedUser) {
-      console.log("revalidating path");
       revalidatePath(`/profile/${userId}`);
       return {
         success: true,

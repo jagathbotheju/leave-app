@@ -193,7 +193,6 @@ export const setLeave = async ({
       error: "Could not create New Leave, Try again later.",
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error: "Internal Server Error",
@@ -229,7 +228,6 @@ export const setLeaveStatus = async ({
         ? LeaveStatus.REJECTED
         : LeaveStatus.UNKNOWN;
 
-    console.log("status", leaveStatus);
     const updatedLeave = await prisma.leave.update({
       where: {
         id: leaveId,
@@ -253,7 +251,6 @@ export const setLeaveStatus = async ({
       error: "Could not change leave status, try later!",
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error: "Internal Server Error",
@@ -271,7 +268,6 @@ export const setLeaveBalance = async ({
   balance: z.infer<typeof LeaveBalanceSchema>;
   isEditMode: boolean;
 }) => {
-  console.log("balance", balance);
   const currentUser = await getCurrentUser();
   if (currentUser.id !== userid) {
     return {
@@ -319,7 +315,6 @@ export const setLeaveBalance = async ({
       error: "Could not set leave balance, try later",
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error: "Internal Server Error",

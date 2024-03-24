@@ -10,7 +10,6 @@ export default async function Home() {
   const user = session?.user as UserExt;
   const res = await getUsers();
   const users = res.data as UserExt[];
-  console.log(users[0].leave);
 
   return (
     <main className="flex flex-col mt-10 mx-auto px-20">

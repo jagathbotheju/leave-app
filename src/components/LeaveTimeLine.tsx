@@ -43,7 +43,6 @@ const LeaveTimeLine = ({ users }: Props) => {
       m.diff(moment(END_DATE), "days") <= 0;
       m.add(1, "days")
     ) {
-      // console.log(m.format("YYYY-MM-DD"));
       cal.push({
         date: m.format("YYYY-MM-DD"),
         isOnLeave: false,

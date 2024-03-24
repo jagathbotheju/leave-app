@@ -33,7 +33,6 @@ export const sendMail = async ({
       subject,
       html: body,
     });
-    console.log("send result", { result: sendResult.accepted });
 
     if (!_.isEmpty(sendResult.accepted)) {
       return {
@@ -47,7 +46,10 @@ export const sendMail = async ({
       message: "Could not send activation link, try again later",
     };
   } catch (error) {
-    console.log(error);
+    return {
+      success: false,
+      message: "Internal Server Error",
+    };
   }
 };
 

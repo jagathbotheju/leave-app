@@ -62,7 +62,6 @@ export const activateUser = async (jwtUserId: string) => {
       message: "Could not Verify User, please try again later",
     };
   } catch (error) {
-    console.log("activateUser Error", error);
     return {
       success: false,
       error: "Activate User, Internal Server Error",
@@ -127,8 +126,6 @@ export const registerUserAction = async (
       body,
     });
 
-    console.log("sendMailRes", sendMailRes);
-    console.log(!_.isEmpty(sendMailRes));
     if (sendMailRes?.success) {
       return {
         success: true,
@@ -141,7 +138,6 @@ export const registerUserAction = async (
       error: "Could not register user, please try again later",
     };
   } catch (error: any) {
-    console.log(error);
     return {
       success: false,
       error: "Internal Server Error,try again later",
@@ -179,14 +175,11 @@ export const forgotPassword = async (email: string) => {
       body,
     });
 
-    console.log("sendResult", sendResult);
-
     return {
       success: true,
       message: "Email has been sent to re-set password",
     };
   } catch (error) {
-    console.log(error);
     throw Error("Internal Server Error, try again later");
   }
 };

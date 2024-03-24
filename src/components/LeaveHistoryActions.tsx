@@ -65,8 +65,6 @@ const LeaveHistoryActions = ({ data }: Props) => {
     };
   }
 
-  // console.log(data);
-
   const handleLeaveDelete = () => {
     deleteLeave({
       leaveId: data.leaveId,

@@ -55,8 +55,6 @@ const LeaveRequestForm = ({ user }: Props) => {
     mode: "all",
   });
 
-  // console.log("LeaveRequestForm", user.leave);
-
   const onSubmit = (data: z.infer<typeof LeaveRequestSchema>) => {
     //check leave exist
     const requestStartDate = moment(data.startDate);
@@ -134,7 +132,6 @@ const LeaveRequestForm = ({ user }: Props) => {
         }
       })
       .catch((error) => {
-        console.log(error);
         toast.error("Internal Server Error, Try Later");
       })
       .finally(() => {

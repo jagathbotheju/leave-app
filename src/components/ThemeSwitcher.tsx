@@ -13,8 +13,6 @@ export function ThemeSwitcher() {
 
   if (!mounted) return null;
 
-  console.log("theme", theme);
-
   return (
     <div>
       {theme === "dark" ? (

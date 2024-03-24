@@ -37,7 +37,6 @@ const ProfileEditForm = () => {
     mode: "all",
   });
   const user = session?.user as UserExt;
-  // console.log("ProfileEditForm", user);
 
   useEffect(() => {
     if (user && user.name && user.email) {
@@ -47,7 +46,6 @@ const ProfileEditForm = () => {
   }, [form, user]);
 
   const onSubmit = (data: z.infer<typeof ProfileEditSchema>) => {
-    console.log(data);
     startTransition(() => {
       updateUserProfile({
         email: data.email,

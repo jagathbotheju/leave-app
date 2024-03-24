@@ -38,7 +38,6 @@ const LoginForm = ({ callbackUrl }: Props) => {
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     const { email, password } = values;
-    console.log(email, password);
     signIn("credentials", {
       email,
       password,
@@ -46,7 +45,6 @@ const LoginForm = ({ callbackUrl }: Props) => {
     })
       .then((res) => {
         if (!res?.ok) {
-          console.log(res);
           return toast.error(res?.error);
         } else {
           toast.success("Successfully Logged In");
@@ -56,7 +54,6 @@ const LoginForm = ({ callbackUrl }: Props) => {
       })
       .catch((err) => {
         toast.error(err.message);
-        console.log(err);
       });
   };
 

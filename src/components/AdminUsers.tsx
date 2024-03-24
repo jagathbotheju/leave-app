@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import _ from "lodash";
 import { useTransition } from "react";
 import { deleteUser } from "@/actions/userActions";
+import { toast } from "sonner";
 
 interface Props {
   users: UserExt[];
@@ -33,7 +34,17 @@ const AdminUsers = ({ users }: Props) => {
               className="w-5 h-5 text-red-500 cursor-pointer"
               onClick={() => {
                 startTransition(() => {
-                  deleteUser(user.id);
+                  deleteUser(user.id)
+                    .then((res) => {
+                      if (res.success) {
+                        return toast.success(res.message);
+                      } else {
+                        return toast.error(res.message);
+                      }
+                    })
+                    .catch((err) => {
+                      return toast.error("Internal Server Error");
+                    });
                 });
               }}
             />
