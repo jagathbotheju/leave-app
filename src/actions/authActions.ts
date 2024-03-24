@@ -18,48 +18,56 @@ import _ from "lodash";
 
 /*******************************************ACTIVATE USER */
 export const activateUser = async (jwtUserId: string) => {
-  const payload = verifyJwt(jwtUserId);
-  const userId = payload?.id;
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
+  try {
+    const payload = verifyJwt(jwtUserId);
+    const userId = payload?.id;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
 
-  if (!user) {
+    if (!user) {
+      return {
+        success: false,
+        message: "User Not Exist",
+      };
+    }
+    if (user.emailVerified) {
+      return {
+        success: false,
+        message: "User Already Verified",
+      };
+    }
+
+    //update emailVerified
+    const result = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        emailVerified: new Date(),
+      },
+    });
+
+    if (result) {
+      return {
+        success: true,
+        message: "User Verified Successfully",
+      };
+    }
+
     return {
       success: false,
-      message: "User Not Exist",
+      message: "Could not Verify User, please try again later",
     };
-  }
-  if (user.emailVerified) {
+  } catch (error) {
+    console.log("activateUser Error", error);
     return {
       success: false,
-      message: "User Already Verified",
+      error: "Activate User, Internal Server Error",
     };
   }
-
-  //update emailVerified
-  const result = await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      emailVerified: new Date(),
-    },
-  });
-
-  if (result) {
-    return {
-      success: true,
-      message: "User Verified Successfully",
-    };
-  }
-
-  return {
-    success: false,
-    message: "Could not Verify User, please try again later",
-  };
 };
 
 /*******************************************RESISTER USER ACTION */

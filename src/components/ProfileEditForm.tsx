@@ -90,7 +90,7 @@ const ProfileEditForm = () => {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input className="dark:bg-slate-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -106,7 +106,7 @@ const ProfileEditForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input className="dark:bg-slate-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -55,7 +55,31 @@ const LeaveRequestForm = ({ user }: Props) => {
     mode: "all",
   });
 
+  // console.log("LeaveRequestForm", user.leave);
+
   const onSubmit = (data: z.infer<typeof LeaveRequestSchema>) => {
+    //check leave exist
+    const requestStartDate = moment(data.startDate);
+    const requestEndDate = moment(data.endDate);
+    user.leave.map((item) => {
+      const leaveStartDate = moment(item.startDate);
+      const leaveEndDate = moment(item.endDate);
+      if (
+        requestStartDate.isBetween(
+          leaveStartDate,
+          leaveEndDate,
+          "date",
+          "[]"
+        ) ||
+        requestEndDate.isBetween(leaveStartDate, leaveEndDate, "date", "[]")
+      ) {
+        return toast.error(
+          "Overlapping with existing leave dates, please check"
+        );
+      }
+    });
+
+    // adjusting leave balance
     const annualBalance =
       user.leaveBalance.annual + user.leaveBalance.annualForward;
     const casualBalance = user.leaveBalance.casual;
@@ -148,7 +172,7 @@ const LeaveRequestForm = ({ user }: Props) => {
             <FormItem>
               <FormLabel>Year</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input className="dark:bg-slate-700" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -161,14 +185,14 @@ const LeaveRequestForm = ({ user }: Props) => {
           name="leaveType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Leave Type</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
+                <FormControl className="dark:bg-slate-700">
                   <SelectTrigger>
                     <SelectValue placeholder="Select a Leave Type" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className="dark:bg-slate-700">
                   <SelectItem value="annual">Annual</SelectItem>
                   <SelectItem value="casual">Casual</SelectItem>
                   <SelectItem value="sick">Sick</SelectItem>
@@ -189,7 +213,7 @@ const LeaveRequestForm = ({ user }: Props) => {
               <FormLabel>Start Date</FormLabel>
               <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                 <PopoverTrigger asChild>
-                  <FormControl>
+                  <FormControl className="dark:bg-slate-700">
                     <Button
                       variant={"outline"}
                       className={cn(
@@ -208,9 +232,14 @@ const LeaveRequestForm = ({ user }: Props) => {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
+                    className="dark:bg-slate-700"
                     mode="single"
                     selected={field.value}
                     onSelect={(value) => {
+                      const year = form.getValues().year;
+                      const selectedYear = moment(value).format("YYYY");
+                      if (year !== selectedYear)
+                        form.setValue("year", selectedYear);
                       field.onChange(value);
                       setStartDateOpen(false);
                     }}
@@ -233,7 +262,7 @@ const LeaveRequestForm = ({ user }: Props) => {
               <FormLabel>End Date</FormLabel>
               <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
                 <PopoverTrigger asChild>
-                  <FormControl>
+                  <FormControl className="dark:bg-slate-700">
                     <Button
                       variant={"outline"}
                       className={cn(
@@ -252,6 +281,7 @@ const LeaveRequestForm = ({ user }: Props) => {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
+                    className="dark:bg-slate-700"
                     mode="single"
                     selected={field.value}
                     onSelect={(value) => {
@@ -280,7 +310,7 @@ const LeaveRequestForm = ({ user }: Props) => {
             <FormItem>
               <FormLabel>Number of Days</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input className="dark:bg-slate-700" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

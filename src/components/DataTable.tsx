@@ -73,19 +73,19 @@ export function DataTable<TData, TValue>({
           placeholder="Filter..."
           value={filtering}
           onChange={(event) => setFiltering(event.target.value)}
-          className="max-w-sm focus-visible:ring-0"
+          className="max-w-sm focus-visible:ring-0 dark:bg-slate-700"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               size="sm"
               variant="outline"
-              className="ml-auto focus-visible:ring-0"
+              className="ml-auto focus-visible:ring-0 dark:bg-slate-700"
             >
               Columns
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="dark:bg-slate-700">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())

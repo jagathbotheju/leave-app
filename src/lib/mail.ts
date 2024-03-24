@@ -3,6 +3,7 @@ import * as handlebars from "handlebars";
 import { templateForgotPassword } from "./templateForgotPassword";
 import { templateActivation } from "./templateActivation";
 import _ from "lodash";
+import { temNewRequest } from "./temNewRequest";
 
 export const sendMail = async ({
   to,
@@ -48,6 +49,17 @@ export const sendMail = async ({
   } catch (error) {
     console.log(error);
   }
+};
+
+export const comNewRequest = (name: string, from: string, to: string) => {
+  const template = handlebars.compile(temNewRequest);
+  const htmlBody = template({
+    name,
+    from,
+    to,
+  });
+
+  return htmlBody;
 };
 
 export const compileActivationMailTemplate = (name: string, url: string) => {

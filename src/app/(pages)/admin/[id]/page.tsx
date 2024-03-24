@@ -13,6 +13,8 @@ import { getServerSession } from "next-auth";
 import { redirect, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import _ from "lodash";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AdminUsers from "@/components/AdminUsers";
 
 interface Props {
   params: {
@@ -76,10 +78,35 @@ const AdminPage = async ({ params }: Props) => {
   return (
     <div className="flex w-full flex-col">
       <Header title="ADMIN AREA" className="bg-red-100 text-red-500" />
+
       <div className="flex flex-col container mx-auto max-w-7xl">
-        <Suspense fallback={<Loading />}>
-          <DataTable columns={AdminHistoryColumns} data={adminHistoryData} />
-        </Suspense>
+        <Tabs defaultValue="history">
+          <TabsList className="grid w-full grid-cols-2 bg-transparent items-center gap-10">
+            <TabsTrigger
+              className="data-[state=active]:border-b border-primary rounded-none dark:bg-slate-700"
+              value="history"
+            >
+              Users Leave History
+            </TabsTrigger>
+            <TabsTrigger
+              className="data-[state=active]:border-b border-primary rounded-none dark:bg-slate-700"
+              value="users"
+            >
+              Users
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="history">
+            <Suspense fallback={<Loading />}>
+              <DataTable
+                columns={AdminHistoryColumns}
+                data={adminHistoryData}
+              />
+            </Suspense>
+          </TabsContent>
+          <TabsContent value="users">
+            <AdminUsers users={users} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

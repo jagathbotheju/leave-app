@@ -1,14 +1,19 @@
+import moment from "moment";
+
 export const months = [
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
+  "JANUARY",
+  "FEBRUARY",
+  "MARCH",
+  "APRIL",
   "MAY",
   "JUN",
-  "JUL",
-  "AUG",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DEC",
+  "JULY",
+  "AUGUST",
+  "SEPTEMBER",
+  "OCTOBER",
+  "NOVEMBER",
+  "DECEMBER",
 ];
+
+export const START_DATE = `${moment().year()}-${1}-${1}`;
+export const END_DATE = `${moment().year() + 1}-${2}-${1}`;

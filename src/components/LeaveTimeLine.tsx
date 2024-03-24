@@ -5,9 +5,10 @@ import moment from "moment";
 import useDraggableScroll from "use-draggable-scroll";
 import { useRef } from "react";
 import { UserExt } from "@/types";
-import { months } from "@/lib/data";
+import { END_DATE, START_DATE } from "@/lib/data";
 import DateChip from "./DateChip";
 import { LeaveStatus } from "@prisma/client";
+import MonthLabel from "./MonthLabel";
 
 interface Props {
   users: UserExt[];
@@ -15,9 +16,7 @@ interface Props {
 
 const LeaveTimeLine = ({ users }: Props) => {
   const ref = useRef(null);
-  const { onMouseDown } = useDraggableScroll(ref);
-  const daysInMonth = (month: number) =>
-    new Date(new Date().getFullYear(), month, 0).getDate();
+  const { onMouseDown } = useDraggableScroll(ref, { direction: "horizontal" });
 
   const getDateRange = (startDate: Date, endDate: Date, steps = 1) => {
     const dateArray = [];
@@ -32,35 +31,35 @@ const LeaveTimeLine = ({ users }: Props) => {
     return dateArray;
   };
 
-  const getCalendar = () => {
+  const newCal = () => {
     const cal: {
-      date: Date;
+      date: string;
       isOnLeave: boolean;
       status: LeaveStatus;
     }[] = [];
-    _.times(12).map((month: number, monthIndex) => {
-      return _.times(daysInMonth(month + 1)).map((date: number, index) => {
-        const checkDate = new Date(
-          `${moment().year()}-${month + 1}-${date + 1}`
-        );
-        cal.push({
-          date: checkDate,
-          isOnLeave: false,
-          status: LeaveStatus.PENDING,
-        });
-      });
-    });
 
+    for (
+      let m = moment(START_DATE);
+      m.diff(moment(END_DATE), "days") <= 0;
+      m.add(1, "days")
+    ) {
+      // console.log(m.format("YYYY-MM-DD"));
+      cal.push({
+        date: m.format("YYYY-MM-DD"),
+        isOnLeave: false,
+        status: LeaveStatus.PENDING,
+      });
+    }
     return cal;
   };
 
   const getUserLeaves = (user: UserExt) => {
-    const userLeaves: { date: Date; status: LeaveStatus }[] = [];
+    const userLeaves: { date: string; status: LeaveStatus }[] = [];
     user.leave.map((item) => {
       const range = getDateRange(item.startDate, item.endDate);
       range.map((date) =>
         userLeaves.push({
-          date: date,
+          date: moment(date).format("YYYY-MM-DD"),
           status: item.leaveStatus,
         })
       );
@@ -70,16 +69,15 @@ const LeaveTimeLine = ({ users }: Props) => {
 
   const getUserLeaveCalendar = (
     calendar: {
-      date: Date;
+      date: string;
       isOnLeave: boolean;
       status: LeaveStatus;
     }[],
-    userLeaves: { date: Date; status: LeaveStatus }[]
+    userLeaves: { date: string; status: LeaveStatus }[]
   ) => {
     const userLeaveCalendar = calendar.map((calendarItem) => {
       const includes = userLeaves.find(
-        (userLeave) =>
-          userLeave.date.toISOString() === calendarItem.date.toISOString()
+        (userLeave) => userLeave.date === calendarItem.date
       );
       if (includes) {
         return {
@@ -93,65 +91,42 @@ const LeaveTimeLine = ({ users }: Props) => {
     return userLeaveCalendar;
   };
 
-  const calendar = getCalendar();
-  // console.log("user", users[0]);
-  //const userLeaves = getUserLeaves(users[0]);
-  //console.log(userLeaves.map((leave) => leave.date.toDateString()));
-
   return (
     <div className="flex flex-col w-full">
       <div className="flex w-full h-[700px] gap-1">
         {/* user names */}
-        <div className="flex flex-col w-[10%] gap-4 mt-10">
+        <div className="flex flex-col w-[10%] gap-4 mt-[48px]">
           {users.map((user) => (
             <p
               key={user.id}
-              className="p-2 h-10 text-end font-semibold rounded-md bg-orange-100 text-slate-700"
+              className="p-2 h-10 text-end font-semibold rounded-md bg-slate-200 text-slate-800"
             >
               {user.name}
             </p>
           ))}
         </div>
 
+        {/* scrolling calendar view */}
         <div
-          className="flex w-full gap-1 overflow-hidden"
+          className="flex flex-col w-full gap-1 overflow-x-hidden cursor-grab"
           ref={ref}
           onMouseDown={onMouseDown}
         >
-          <div className="flex flex-col w-full">
-            <div className="flex w-full h-10 items-center gap-1 ml-2">
-              {months.map((month, index) =>
-                _.times(daysInMonth(index + 1)).map((date: number, index) => {
-                  if (date + 1 === 1) {
-                    return <div key={date}>{month}</div>;
-                  } else {
-                    return (
-                      <div
-                        key={date + month}
-                        className="p-2 px-4 w-5 flex items-center justify-center h-10 text-xs rounded-md border border-transparent"
-                      >
-                        {" "}
-                      </div>
-                    );
-                  }
-                })
-              )}
-            </div>
+          <div className="flex flex-col w-full gap-2">
+            {/* month label */}
+            <MonthLabel />
 
             {/* user leaves */}
             <div className="flex flex-col gap-4">
               {users.map((user, index) => {
                 const userLeaves = getUserLeaves(user);
                 const userLeaveCalendar = getUserLeaveCalendar(
-                  calendar,
+                  newCal(),
                   userLeaves
                 );
 
                 const row = userLeaveCalendar.map((leaveInfo) => (
-                  <DateChip
-                    key={leaveInfo.date.toISOString()}
-                    leaveInfo={leaveInfo}
-                  />
+                  <DateChip key={leaveInfo.date} leaveInfo={leaveInfo} />
                 ));
 
                 return (

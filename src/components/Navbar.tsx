@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AuthButton from "./AuthButton";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const Navbar = () => {
   return (
@@ -8,8 +9,9 @@ const Navbar = () => {
         <Link href="/" className="text-3xl font-semibold">
           TEST
         </Link>
-        <div>
+        <div className="flex items-center gap-2">
           <AuthButton />
+          <ThemeSwitcher />
         </div>
       </div>
     </div>

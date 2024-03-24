@@ -5,6 +5,7 @@ import Providers from "@/components/Providers";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/SessionProvider";
 import Navbar from "@/components/Navbar";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,15 +30,24 @@ export default async function RootLayout({
   const session = await getServerSession();
 
   return (
-    <html lang="en">
-      <body className={`${inter.className} min-h-screen flex flex-col`}>
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <body
+        className={`${inter.className} min-h-screen flex flex-col dark:bg-slate-600`}
+      >
         <main className="grow">
-          <Providers>
-            <SessionProvider session={session}>
-              <Navbar />
-              {children}
-            </SessionProvider>
-          </Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Providers>
+              <SessionProvider session={session}>
+                <Navbar />
+                {children}
+              </SessionProvider>
+            </Providers>
+          </ThemeProvider>
         </main>
       </body>
     </html>

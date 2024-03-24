@@ -1,19 +1,25 @@
 import { months } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { LeaveStatus } from "@prisma/client";
+import moment from "moment";
 
 interface Props {
   leaveInfo: {
-    date: Date;
+    date: string;
     isOnLeave: boolean;
     status: LeaveStatus;
   };
 }
 
 const DateChip = ({ leaveInfo }: Props) => {
-  const date = leaveInfo.date.getDate();
-  const month = leaveInfo.date.getMonth();
-  console.log(leaveInfo.date.getMonth() + 1, leaveInfo.date.getMonth() + 1);
+  const date = moment(leaveInfo.date).date();
+  const month = moment(leaveInfo.date).month();
+
+  // console.log("date", date);
+
+  if (leaveInfo.isOnLeave) {
+    // console.log(month + 1, date);
+  }
 
   return (
     <div
@@ -36,7 +42,7 @@ const DateChip = ({ leaveInfo }: Props) => {
             leaveInfo.isOnLeave && "text-slate-700 font-semibold"
           )}
         >
-          {months[month]}
+          {months[month].slice(0, 3)}
         </p>
         <p>{date}</p>
       </div>

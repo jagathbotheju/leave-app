@@ -80,7 +80,7 @@ const LeaveBalanceForm = ({ user, isEditMode }: Props) => {
         className="space-y-4 max-w-lg"
       >
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-700">
+          <h1 className="text-2xl font-bold dark:text-slate-50 text-slate-700">
             {isEditMode ? "Update Leave Balance" : "Set Leave Balance"}
           </h1>
           {edit && (
@@ -99,7 +99,7 @@ const LeaveBalanceForm = ({ user, isEditMode }: Props) => {
             <FormItem>
               <FormLabel>Year</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input className="dark:bg-slate-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -115,7 +115,7 @@ const LeaveBalanceForm = ({ user, isEditMode }: Props) => {
             <FormItem>
               <FormLabel>Annual</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input className="dark:bg-slate-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -131,7 +131,7 @@ const LeaveBalanceForm = ({ user, isEditMode }: Props) => {
             <FormItem>
               <FormLabel>Annual From Last Year</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input className="dark:bg-slate-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -147,7 +147,7 @@ const LeaveBalanceForm = ({ user, isEditMode }: Props) => {
             <FormItem>
               <FormLabel>Casual</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input className="dark:bg-slate-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -163,7 +163,7 @@ const LeaveBalanceForm = ({ user, isEditMode }: Props) => {
             <FormItem>
               <FormLabel>Sick</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input className="dark:bg-slate-600" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

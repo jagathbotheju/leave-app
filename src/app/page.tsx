@@ -19,7 +19,6 @@ export default async function Home() {
           Please go to Profile and set your Leave Balance, for this year
         </h2>
       )}
-      Home Page
       <div className="mt-10">
         <LeaveTimeLine users={users} />
       </div>

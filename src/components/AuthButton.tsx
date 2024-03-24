@@ -33,6 +33,7 @@ const AuthButton = () => {
 
           <Button
             className="text-sky-300 hover:text-sky-400 transition-colors"
+            size="sm"
             onClick={() => router.push(`/leave/request/${user.id}`)}
           >
             NEW
@@ -50,7 +51,7 @@ const AuthButton = () => {
                 />
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-36">
+            <DropdownMenuContent className="w-36 dark:bg-slate-700">
               {/* new request */}
               <DropdownMenuItem
                 className="cursor-pointer hover:font-semibold"
@@ -100,8 +101,10 @@ const AuthButton = () => {
         </>
       ) : (
         <>
-          <Button onClick={() => signIn()}>Log In</Button>
-          <Button onClick={() => router.push("/auth/register")}>
+          <Button onClick={() => signIn()} size="sm">
+            Log In
+          </Button>
+          <Button onClick={() => router.push("/auth/register")} size="sm">
             Register
           </Button>
         </>

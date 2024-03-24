@@ -7,6 +7,8 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { UserExt } from "@/types";
+import { comNewRequest, sendMail } from "@/lib/mail";
+import moment from "moment";
 
 const getCurrentUser = async () => {
   const session = await getServerSession(authOptions);
@@ -134,6 +136,14 @@ export const setLeave = async ({
   userid: string;
   newLeave: z.infer<typeof LeaveRequestSchema>;
 }) => {
+  const currentUser = await getCurrentUser();
+  if (currentUser.id !== userid) {
+    return {
+      success: false,
+      error: "Not Authorized to update this leave, please contact ADMIN",
+    };
+  }
+
   const leaveType =
     newLeave.leaveType === "annual"
       ? LeaveType.ANNUAL
@@ -162,6 +172,16 @@ export const setLeave = async ({
     });
 
     if (updatedUser) {
+      const body = comNewRequest(
+        updatedUser.name as string,
+        moment(newLeave.startDate).format("YYYY-MM-DD"),
+        moment(newLeave.endDate).format("YYYY-MM-DD")
+      );
+      await sendMail({
+        to: updatedUser.email as string,
+        subject: "New Leave Request | My Leave Plan",
+        body,
+      });
       return {
         success: true,
         message: "New Leave Requested",
@@ -191,9 +211,15 @@ export const setLeaveStatus = async ({
   leaveId: string;
   status: string;
 }) => {
-  console.log("userid", userId);
-  console.log("leaveid", leaveId);
   try {
+    const currentUser = await getCurrentUser();
+    if (currentUser.id !== userId && currentUser.role !== "ADMIN") {
+      return {
+        success: false,
+        error: "Not Authorized to update this leave, please contact ADMIN",
+      };
+    }
+
     const leaveStatus =
       status === "PENDING"
         ? LeaveStatus.PENDING
@@ -246,6 +272,14 @@ export const setLeaveBalance = async ({
   isEditMode: boolean;
 }) => {
   console.log("balance", balance);
+  const currentUser = await getCurrentUser();
+  if (currentUser.id !== userid) {
+    return {
+      success: false,
+      error: "Not Authorized to update this leave, please contact ADMIN",
+    };
+  }
+
   try {
     let res: any = null;
     if (isEditMode) {
