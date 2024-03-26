@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { UserExt } from "@/types";
-import { comNewRequest, sendMail } from "@/lib/mail";
+import { comNewRequest, comUpdateRequest, sendMail } from "@/lib/mail";
 import moment from "moment";
 
 const getCurrentUser = async () => {
@@ -22,7 +22,7 @@ const getCurrentUser = async () => {
 /*******************************SET LEAVE STATUS*/
 /*******************************SET LEAVE BALANCE*/
 
-/*******************************UPDATE LEAVE*/
+/*******************************UPDATE LEAVE WITH EMAIL*/
 export const updateLeave = async ({
   userId,
   leaveId,
@@ -65,6 +65,16 @@ export const updateLeave = async ({
     });
 
     if (leave) {
+      const body = comUpdateRequest(
+        currentUser.name as string,
+        moment(newLeave.startDate).format("YYYY-MM-DD"),
+        moment(newLeave.endDate).format("YYYY-MM-DD")
+      );
+      await sendMail({
+        to: currentUser.email as string,
+        subject: "Update Leave | My Leave Plan",
+        body,
+      });
       return {
         success: true,
         message: "Leave Updated Successfully",
@@ -83,7 +93,7 @@ export const updateLeave = async ({
   }
 };
 
-/*******************************DELETE LEAVE */
+/*******************************DELETE LEAVE WITH EMAIL*/
 export const deleteLeave = async ({
   leaveId,
   userId,
@@ -109,6 +119,16 @@ export const deleteLeave = async ({
     });
 
     if (deletedLeave) {
+      const body = comUpdateRequest(
+        currentUser.name as string,
+        moment(deletedLeave.startDate).format("YYYY-MM-DD"),
+        moment(deletedLeave.endDate).format("YYYY-MM-DD")
+      );
+      await sendMail({
+        to: currentUser.email as string,
+        subject: "Delete Leave | My Leave Plan",
+        body,
+      });
       revalidatePath(path);
       return {
         success: true,
@@ -128,7 +148,7 @@ export const deleteLeave = async ({
   }
 };
 
-/*******************************SET USER LEAVE */
+/*******************************SET USER LEAVE WITH EMAIL*/
 export const setLeave = async ({
   userid,
   newLeave,

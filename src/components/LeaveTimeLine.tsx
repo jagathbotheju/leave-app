@@ -3,7 +3,7 @@ import "react-calendar-timeline/lib/Timeline.css";
 import _ from "lodash";
 import moment from "moment";
 import useDraggableScroll from "use-draggable-scroll";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { UserExt } from "@/types";
 import { END_DATE, START_DATE } from "@/lib/data";
 import DateChip from "./DateChip";
@@ -90,6 +90,15 @@ const LeaveTimeLine = ({ users }: Props) => {
     return userLeaveCalendar;
   };
 
+  const currentMonth = moment().month();
+  const currentDate = moment().date();
+  const scrollTo = `${currentMonth + 1}-${currentDate}`;
+  const timeLine = document.getElementById(`${scrollTo}`);
+  timeLine?.scrollIntoView({
+    behavior: "smooth",
+    inline: "end",
+  });
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex w-full h-[700px] gap-1">
@@ -109,6 +118,7 @@ const LeaveTimeLine = ({ users }: Props) => {
         <div
           className="flex flex-col w-full gap-1 overflow-x-hidden cursor-grab"
           ref={ref}
+          id="time-line"
           onMouseDown={onMouseDown}
         >
           <div className="flex flex-col w-full gap-2">

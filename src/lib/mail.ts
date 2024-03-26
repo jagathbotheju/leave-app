@@ -4,6 +4,8 @@ import { templateForgotPassword } from "./templateForgotPassword";
 import { templateActivation } from "./templateActivation";
 import _ from "lodash";
 import { temNewRequest } from "./temNewRequest";
+import { temUpdateRequest } from "./temUpdateRequest";
+import { temDeleteRequest } from "./temDeleteRequest";
 
 export const sendMail = async ({
   to,
@@ -51,6 +53,28 @@ export const sendMail = async ({
       message: "Internal Server Error",
     };
   }
+};
+
+export const comDeleteRequest = (name: string, from: string, to: string) => {
+  const template = handlebars.compile(temDeleteRequest);
+  const htmlBody = template({
+    name,
+    from,
+    to,
+  });
+
+  return htmlBody;
+};
+
+export const comUpdateRequest = (name: string, from: string, to: string) => {
+  const template = handlebars.compile(temUpdateRequest);
+  const htmlBody = template({
+    name,
+    from,
+    to,
+  });
+
+  return htmlBody;
 };
 
 export const comNewRequest = (name: string, from: string, to: string) => {

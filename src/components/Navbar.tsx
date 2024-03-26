@@ -7,7 +7,7 @@ const Navbar = () => {
     <div className="flex w-full shadow-lg">
       <div className="flex items-center justify-between container max-w-6xl w-full p-5">
         <Link href="/" className="text-3xl font-semibold">
-          TEST
+          My Leave Plan
         </Link>
         <div className="flex items-center gap-2">
           <AuthButton />

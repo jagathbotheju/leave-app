@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface Props {
   callbackUrl?: string;
@@ -110,30 +111,46 @@ const LoginForm = ({ callbackUrl }: Props) => {
           )}
         />
 
-        <div className="flex flex-col gap-3 items-center pb-5">
-          <Button className="w-full">Log In</Button>
-          <Link
-            href="/auth/forgot-password"
-            className="text-xs self-end cursor-pointer hover:text-primary"
-          >
-            forgot password?
-          </Link>
-
-          <div className="flex items-center gap-x-5">
-            <div className="flex bg-slate-200 w-20 h-[0.5px]" />
-            or
-            <div className="flex bg-slate-200 w-20 h-[0.5px]" />
-          </div>
-          <Button className="w-full" variant="secondary">
-            <FaGoogle className="w-4 h-4 mr-2" />
-            Google
-          </Button>
-
-          <Link href="/auth/register" className="text-xs hover:text-primary">
-            {"Don't have an Account? Create New"}
-          </Link>
-        </div>
+        <Button type="submit" className="w-full">
+          Log In
+        </Button>
       </form>
+
+      <div className="flex flex-col gap-3 items-center pb-5">
+        <Link
+          href="/auth/forgot-password"
+          className="text-xs self-end cursor-pointer hover:text-primary mt-1"
+        >
+          forgot password?
+        </Link>
+
+        <div className="flex items-center gap-x-5">
+          <div className="flex bg-slate-200 w-20 h-[0.5px]" />
+          or
+          <div className="flex bg-slate-200 w-20 h-[0.5px]" />
+        </div>
+        <Button
+          className="w-full"
+          variant="secondary"
+          onClick={() => signIn("google", { callbackUrl: "/" })}
+        >
+          {/* <FaGoogle className="w-4 h-4 mr-2" /> */}
+          <div className="relative mr-2">
+            <Image
+              alt="logo"
+              src="/images/google-icon.svg"
+              className="top-0 left-0 relative"
+              width={20}
+              height={20}
+            />
+          </div>
+          Google
+        </Button>
+
+        <Link href="/auth/register" className="text-xs hover:text-primary">
+          {"Don't have an Account? Create New"}
+        </Link>
+      </div>
     </Form>
   );
 };

@@ -1,4 +1,4 @@
-export const templateForgotPassword = `
+export const temUpdateRequest = `
 <!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
 
@@ -126,8 +126,8 @@ export const templateForgotPassword = `
 													<table class="paragraph_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
 														<tr>
 															<td class="pad" style="padding-bottom:20px;padding-top:20px;">
-																<div style="color:#283C4B;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:24px;font-weight:400;line-height:120%;text-align:center;mso-line-height-alt:28.799999999999997px;">
-																	<p style="margin: 0; word-break: break-word;"><span><strong><span>Password Reset<br></span></strong></span></p>
+																<div style="color:#283C4B;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:24px;line-height:120%;text-align:center;mso-line-height-alt:28.799999999999997px;">
+																	<p style="margin: 0; word-break: break-word;"><span><strong><span>New Leave Request<br></span></strong></span></p>
 																</div>
 															</td>
 														</tr>
@@ -136,20 +136,9 @@ export const templateForgotPassword = `
 														<tr>
 															<td class="pad">
 																<div style="color:#101112;direction:ltr;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:120%;text-align:center;mso-line-height-alt:19.2px;">
-																	<p style="margin: 0;">{{name}}, To Reset your Password, please click below,</p>
+																	<p style="margin: 0; margin-bottom: 16px;">{{name}}, your leave from {{from}} to {{to}}</p>
+																	<p style="margin: 0;">Successfully Updated.</p>
 																</div>
-															</td>
-														</tr>
-													</table>
-													<table class="button_block block-3" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-														<tr>
-															<td class="pad">
-																<div class="alignment" align="center"><!--[if mso]>
-<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{url}}" style="height:42px;width:86px;v-text-anchor:middle;" arcsize="10%" stroke="false" fillcolor="#7747FF">
-<w:anchorlock/>
-<v:textbox inset="0px,0px,0px,0px">
-<center style="color:#ffffff; font-family:Arial, sans-serif; font-size:16px">
-<![endif]--><a href="{{url}}" target="_blank" style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#7747FF;border-radius:4px;width:auto;border-top:0px solid transparent;font-weight:400;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 32px;">Reset Password</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
 															</td>
 														</tr>
 													</table>
